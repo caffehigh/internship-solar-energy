@@ -102,7 +102,8 @@ LOCATION_DATA = {
     "Gaya": {"state": "Bihar", "irradiance": 4.6, "tariff": 5.5},
     "Jalgaon": {"state": "Maharashtra", "irradiance": 5.4, "tariff": 7.0},
     "Udaipur": {"state": "Rajasthan", "irradiance": 5.9, "tariff": 5.2},
-    "Maheshtala": {"state": "West Bengal", "irradiance": 4.2, "tariff": 6.2}
+    "Maheshtala": {"state": "West Bengal", "irradiance": 4.2, "tariff": 6.2},
+    "Pen": {"state": "Maharashtra", "irradiance": 5.0, "tariff": 7.0}
 }
 
 def get_cities():
