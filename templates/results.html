@@ -1,0 +1,420 @@
+{% extends "base.html" %}
+
+{% block title %}Solar Analysis Results - Your Solar Savings Report{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Header Section -->
+    <div class="col-12">
+        <div class="text-center mb-4">
+            <div class="icon-header justify-content-center">
+                <i class="fas fa-chart-line money-icon" style="font-size: 2.5rem;"></i>
+                <h1 class="display-5 fw-bold text-primary ms-3">Your Solar Analysis Results</h1>
+            </div>
+            <p class="lead text-muted">
+                Comprehensive analysis for {{ results.form_data.location_city }} - {{ results.form_data.investment_model }} Model
+            </p>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="col-12 mb-4">
+        <div class="d-flex justify-content-center gap-3">
+            <a href="{{ url_for('index') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-2"></i>New Calculation
+            </a>
+            <a href="{{ url_for('download_report', calculation_id=results.calculation_id) }}" class="btn btn-primary">
+                <i class="fas fa-download me-2"></i>Download PDF Report
+            </a>
+        </div>
+
+        <!-- Backend Status Info -->
+        <div class="text-center mt-3">
+            <small class="text-muted">
+                <i class="fas fa-info-circle me-1"></i>
+                Calculation ID: {{ results.calculation_id }} |
+                Data saved to backend |
+                <a href="{{ url_for('index') }}" class="text-decoration-none">Calculate another system</a>
+            </small>
+        </div>
+    </div>
+
+    <!-- System Specifications -->
+    <div class="col-12 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <div class="icon-header">
+                    <i class="fas fa-solar-panel solar-icon"></i>
+                    <h4 class="mb-0">Recommended System Specifications</h4>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="metric-card">
+                            <div class="metric-value">{{ results.calculations.plant_capacity }} kWp</div>
+                            <div class="metric-label">System Capacity</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="metric-card">
+                            <div class="metric-value">{{ results.calculations.panel_count }}</div>
+                            <div class="metric-label">Solar Panels</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="metric-card">
+                            <div class="metric-value">{{ results.calculations.inverter_capacity }} kW</div>
+                            <div class="metric-label">Inverter Capacity</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="metric-card">
+                            <div class="metric-value">{{ results.calculations.area_required }} sq ft</div>
+                            <div class="metric-label">Area Required</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Energy Generation -->
+    <div class="col-12 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <div class="icon-header">
+                    <i class="fas fa-bolt solar-icon"></i>
+                    <h4 class="mb-0">Energy Generation</h4>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="metric-card">
+                            <div class="metric-value">{{ "{:,}".format(results.calculations.monthly_generation|int) }} kWh</div>
+                            <div class="metric-label">Monthly Generation</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="metric-card">
+                            <div class="metric-value">{{ "{:,}".format(results.calculations.yearly_generation|int) }} kWh</div>
+                            <div class="metric-label">Annual Generation</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Financial Analysis -->
+    <div class="col-12 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <div class="icon-header">
+                    <i class="fas fa-coins money-icon"></i>
+                    <h4 class="mb-0">Financial Analysis</h4>
+                </div>
+            </div>
+            <div class="card-body">
+                {% if results.form_data.investment_model == 'CAPEX' %}
+                <div class="row">
+                    <div class="col-md-2">
+                        <div class="metric-card">
+                            <div class="metric-value">₹{{ "{:,}".format(results.calculations.investment|int) }}</div>
+                            <div class="metric-label">Total Investment</div>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="metric-card">
+                            <div class="metric-value">₹{{ "{:,}".format(results.calculations.monthly_savings|int) }}</div>
+                            <div class="metric-label">Monthly Savings</div>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="metric-card">
+                            <div class="metric-value">₹{{ "{:,}".format(results.calculations.annual_savings|int) }}</div>
+                            <div class="metric-label">Annual Savings</div>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="metric-card">
+                            <div class="metric-value">{{ results.calculations.payback_period }} years</div>
+                            <div class="metric-label">Payback Period</div>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="metric-card">
+                            <div class="metric-value">₹{{ "{:,}".format(results.calculations.lifetime_savings|int) }}</div>
+                            <div class="metric-label">25-Year Savings</div>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="metric-card">
+                            <div class="metric-value">{{ "%.1f"|format((results.calculations.lifetime_savings / results.calculations.investment * 100)) }}%</div>
+                            <div class="metric-label">Total ROI</div>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="metric-card">
+                            <div class="metric-value">₹{{ "{:,}".format(results.calculations.monthly_savings|int) }}</div>
+                            <div class="metric-label">Monthly Savings</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="metric-card">
+                            <div class="metric-value">₹{{ "{:,}".format(results.calculations.annual_savings|int) }}</div>
+                            <div class="metric-label">Annual Savings</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="metric-card">
+                            <div class="metric-value">₹{{ "{:,}".format(results.calculations.lifetime_savings|int) }}</div>
+                            <div class="metric-label">25-Year Total Savings</div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Environmental Impact -->
+    <div class="col-12 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <div class="icon-header">
+                    <i class="fas fa-leaf eco-icon"></i>
+                    <h4 class="mb-0">Environmental Impact</h4>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="metric-card">
+                            <div class="metric-value">{{ results.calculations.annual_co2_saved }} tons</div>
+                            <div class="metric-label">Annual CO₂ Reduction</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="metric-card">
+                            <div class="metric-value">{{ results.calculations.lifetime_co2_saved }} tons</div>
+                            <div class="metric-label">25-Year CO₂ Reduction</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="metric-card">
+                            <div class="metric-value">{{ "{:,}".format(results.calculations.equivalent_trees|int) }}</div>
+                            <div class="metric-label">Equivalent Trees Planted</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recommendations -->
+    {% if results.recommendations %}
+    <div class="col-12 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <div class="icon-header">
+                    <i class="fas fa-lightbulb" style="color: #FFD700;"></i>
+                    <h4 class="mb-0">Personalized Recommendations</h4>
+                </div>
+            </div>
+            <div class="card-body">
+                {% for recommendation in results.recommendations %}
+                <div class="recommendation-card {{ recommendation.priority }}-priority">
+                    <h6 class="fw-bold mb-2">
+                        {% if recommendation.priority == 'high' %}
+                            <i class="fas fa-exclamation-circle text-danger me-2"></i>
+                        {% elif recommendation.priority == 'medium' %}
+                            <i class="fas fa-info-circle text-warning me-2"></i>
+                        {% else %}
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                        {% endif %}
+                        {{ recommendation.title }}
+                    </h6>
+                    <p class="mb-0">{{ recommendation.message }}</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Input Summary -->
+    <div class="col-12 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <div class="icon-header">
+                    <i class="fas fa-info-circle settings-icon"></i>
+                    <h4 class="mb-0">Calculation Summary</h4>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <table class="table table-borderless">
+                            <tr>
+                                <td><strong>Location:</strong></td>
+                                <td>{{ results.form_data.location_city }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Monthly Bill:</strong></td>
+                                <td>₹{{ "{:,}".format(results.form_data.monthly_bill|int) }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Monthly Consumption:</strong></td>
+                                <td>{{ results.calculations.monthly_consumption }} kWh</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Tariff Rate:</strong></td>
+                                <td>₹{{ results.solar_data.tariff }}/unit</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <table class="table table-borderless">
+                            <tr>
+                                <td><strong>Investment Model:</strong></td>
+                                <td>{{ results.form_data.investment_model }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Consumer Type:</strong></td>
+                                <td>{{ results.form_data.consumer_type }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Installation Type:</strong></td>
+                                <td>{{ results.form_data.installation_type }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Solar Irradiance:</strong></td>
+                                <td>{{ results.solar_data.irradiance }} kWh/m²/day</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- OCR Results (if applicable) -->
+    {% if results.ocr_result and results.ocr_result.success %}
+    <div class="col-12 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <div class="icon-header">
+                    <i class="fas fa-file-alt" style="color: #9C27B0;"></i>
+                    <h4 class="mb-0">Bill Processing Results</h4>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <i class="fas fa-check-circle me-2"></i>
+                    Successfully processed your uploaded electricity bill!
+                    {% if results.ocr_result.extracted_amount %}
+                        <br><strong>Extracted Amount:</strong> ₹{{ "{:,}".format(results.ocr_result.extracted_amount|int) }}
+                    {% endif %}
+                    {% if results.ocr_result.extracted_units %}
+                        <br><strong>Extracted Units:</strong> {{ results.ocr_result.extracted_units }} kWh
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Key Formulas Used -->
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <div class="icon-header">
+                    <i class="fas fa-calculator settings-icon"></i>
+                    <h4 class="mb-0">Calculation Methodology</h4>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="text-primary">Key Formulas Used:</h6>
+                        <ul class="list-unstyled">
+                            <li><strong>Plant Capacity:</strong> Monthly Consumption ÷ (Irradiance × PR × 30)</li>
+                            <li><strong>Monthly Generation:</strong> Capacity × Irradiance × PR × 30</li>
+                            <li><strong>Annual Savings:</strong> Yearly Generation × Tariff Rate</li>
+                            {% if results.form_data.investment_model == 'CAPEX' %}
+                            <li><strong>Payback Period:</strong> Investment ÷ Annual Savings</li>
+                            {% endif %}
+                            <li><strong>CO₂ Saved:</strong> Yearly Generation × 0.8 kg/kWh</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-primary">Assumptions:</h6>
+                        <ul class="list-unstyled">
+                            <li><strong>Performance Ratio:</strong> 75%</li>
+                            <li><strong>System Lifetime:</strong> 25 years</li>
+                            <li><strong>Panel Efficiency:</strong> 400W per panel</li>
+                            <li><strong>Space Requirement:</strong> ~8 sq ft per kW</li>
+                            <li><strong>CO₂ Factor:</strong> 0.8 kg per kWh</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="alert alert-warning mt-3">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Disclaimer:</strong> These calculations are estimates based on standard assumptions.
+                    Actual results may vary based on local conditions, system quality, maintenance, and other factors.
+                    Please consult with certified solar installers for detailed site assessment.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Add some interactive features
+    document.addEventListener('DOMContentLoaded', function() {
+        // Animate metric cards on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animation = 'fadeInUp 0.6s ease forwards';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.metric-card').forEach(card => {
+            observer.observe(card);
+        });
+
+        // Add CSS animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeInUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(30px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+            .metric-card {
+                opacity: 0;
+            }
+        `;
+        document.head.appendChild(style);
+    });
+</script>
+{% endblock %}

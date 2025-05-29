@@ -1,0 +1,369 @@
+{% extends "base.html" %}
+
+{% block title %}Solar Plant Financial Calculator - Calculate Your Savings{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <!-- Header Section -->
+        <div class="text-center mb-5">
+            <div class="icon-header justify-content-center">
+                <i class="fas fa-solar-panel solar-icon" style="font-size: 3rem;"></i>
+                <h1 class="display-4 fw-bold text-primary ms-3">Solar Plant Financial Calculator</h1>
+            </div>
+            <p class="lead text-muted">
+                <i class="fas fa-calculator money-icon me-2"></i>
+                Calculate your potential savings, system requirements, and environmental impact with precision
+            </p>
+        </div>
+
+        <!-- Main Form Card -->
+        <div class="card">
+            <div class="card-header">
+                <div class="icon-header">
+                    <i class="fas fa-edit"></i>
+                    <h3>Solar System Calculator Form</h3>
+                </div>
+                <p class="mb-0">Fill in your details below to get a comprehensive solar analysis</p>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST" action="{{ url_for('calculate') }}" enctype="multipart/form-data" novalidate>
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="row">
+                        <!-- Left Column -->
+                        <div class="col-lg-6">
+                            <!-- Basic Information Section -->
+                            <div class="mb-4">
+                                <h5 class="text-primary mb-3">
+                                    <i class="fas fa-info-circle me-2"></i>Basic Information
+                                </h5>
+                                
+                                <!-- Location -->
+                                <div class="mb-3">
+                                    {{ form.location_city.label(class="form-label") }}
+                                    {{ form.location_city(class="form-select") }}
+                                    <div class="form-text">
+                                        <i class="fas fa-map-marker-alt me-1"></i>
+                                        Select your city for location-specific solar irradiance data
+                                    </div>
+                                </div>
+                                
+                                <!-- Monthly Bill -->
+                                <div class="mb-3">
+                                    {{ form.monthly_bill.label(class="form-label") }}
+                                    <div class="input-group">
+                                        <span class="input-group-text">₹</span>
+                                        {{ form.monthly_bill(class="form-control") }}
+                                    </div>
+                                    <div class="form-text">
+                                        <i class="fas fa-file-invoice-dollar me-1"></i>
+                                        Enter your average monthly electricity bill amount
+                                    </div>
+                                </div>
+                                
+                                <!-- Monthly Consumption -->
+                                <div class="mb-3">
+                                    {{ form.monthly_consumption.label(class="form-label") }}
+                                    <div class="input-group">
+                                        {{ form.monthly_consumption(class="form-control") }}
+                                        <span class="input-group-text">kWh</span>
+                                    </div>
+                                    <div class="form-text">
+                                        <i class="fas fa-bolt me-1"></i>
+                                        Optional: Will be calculated from bill amount if not provided
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Investment Model Section -->
+                            <div class="mb-4">
+                                <h5 class="text-primary mb-3">
+                                    <i class="fas fa-coins me-2"></i>Investment Model
+                                </h5>
+                                
+                                <div class="mb-3">
+                                    {{ form.investment_model.label(class="form-label") }}
+                                    {{ form.investment_model(class="form-select") }}
+                                    <div class="form-text">
+                                        <i class="fas fa-question-circle me-1"></i>
+                                        <strong>CAPEX:</strong> Purchase system outright | 
+                                        <strong>OPEX:</strong> Lease or Power Purchase Agreement
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- File Upload Section -->
+                            <div class="mb-4">
+                                <h5 class="text-primary mb-3">
+                                    <i class="fas fa-file-upload me-2"></i>Bill Upload (Optional)
+                                </h5>
+                                
+                                <div class="mb-3">
+                                    {{ form.bill_upload.label(class="form-label") }}
+                                    {{ form.bill_upload(class="form-control") }}
+                                    <div class="form-text">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        Upload PDF or image of your electricity bill for automatic data extraction
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Column -->
+                        <div class="col-lg-6">
+                            <!-- Consumer Details Section -->
+                            <div class="mb-4">
+                                <h5 class="text-primary mb-3">
+                                    <i class="fas fa-user-tie me-2"></i>Consumer Details
+                                </h5>
+                                
+                                <!-- Consumer Type -->
+                                <div class="mb-3">
+                                    {{ form.consumer_type.label(class="form-label") }}
+                                    {{ form.consumer_type(class="form-select") }}
+                                    <div class="form-text">
+                                        <i class="fas fa-building me-1"></i>
+                                        Affects system pricing and available incentives
+                                    </div>
+                                </div>
+                                
+                                <!-- Consumer Category -->
+                                <div class="mb-3">
+                                    {{ form.consumer_category.label(class="form-label") }}
+                                    {{ form.consumer_category(class="form-select") }}
+                                    <div class="form-text">
+                                        <i class="fas fa-tags me-1"></i>
+                                        Your electricity connection category (LT/HT)
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Installation Details Section -->
+                            <div class="mb-4">
+                                <h5 class="text-primary mb-3">
+                                    <i class="fas fa-tools me-2"></i>Installation Details
+                                </h5>
+                                
+                                <!-- Installation Type -->
+                                <div class="mb-3">
+                                    {{ form.installation_type.label(class="form-label") }}
+                                    {{ form.installation_type(class="form-select") }}
+                                    <div class="form-text">
+                                        <i class="fas fa-home me-1"></i>
+                                        Type of solar installation location
+                                    </div>
+                                </div>
+                                
+                                <!-- Shadow Analysis -->
+                                <div class="mb-3">
+                                    <div class="form-check">
+                                        {{ form.shadow_analysis(class="form-check-input") }}
+                                        {{ form.shadow_analysis.label(class="form-check-label") }}
+                                    </div>
+                                    <div class="form-text">
+                                        <i class="fas fa-sun me-1"></i>
+                                        Check if your installation area is free from shadows
+                                    </div>
+                                </div>
+                                
+                                <!-- Rooftop Area -->
+                                <div class="mb-3">
+                                    {{ form.rooftop_area.label(class="form-label") }}
+                                    <div class="input-group">
+                                        {{ form.rooftop_area(class="form-control") }}
+                                        <span class="input-group-text">sq ft</span>
+                                    </div>
+                                    <div class="form-text">
+                                        <i class="fas fa-ruler-combined me-1"></i>
+                                        Optional: Helps validate if system can fit on available space
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="text-center mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg px-5">
+                            <i class="fas fa-calculator me-2"></i>
+                            Calculate Solar Benefits
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Information Cards -->
+        <div class="row mt-5">
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-solar-panel solar-icon" style="font-size: 2.5rem;"></i>
+                        <h5 class="card-title mt-3">Precise Calculations</h5>
+                        <p class="card-text">
+                            Using Global Solar Atlas data and industry-standard formulas for accurate results.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-chart-line money-icon" style="font-size: 2.5rem;"></i>
+                        <h5 class="card-title mt-3">Financial Analysis</h5>
+                        <p class="card-text">
+                            Complete ROI analysis with payback period, savings, and investment requirements.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-leaf eco-icon" style="font-size: 2.5rem;"></i>
+                        <h5 class="card-title mt-3">Environmental Impact</h5>
+                        <p class="card-text">
+                            Calculate your contribution to reducing carbon emissions and environmental benefits.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sample Benefits Table -->
+        <div class="card mt-5">
+            <div class="card-header">
+                <div class="icon-header">
+                    <i class="fas fa-table"></i>
+                    <h5 class="mb-0">Sample Benefits by Monthly Bill Amount</h5>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Monthly Bill</th>
+                                <th>System Size</th>
+                                <th>Investment (CAPEX)</th>
+                                <th>Annual Savings</th>
+                                <th>Payback Period</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>₹5,000</td>
+                                <td>3.7 kWp</td>
+                                <td>₹2,96,000</td>
+                                <td>₹60,000</td>
+                                <td>4.9 years</td>
+                            </tr>
+                            <tr>
+                                <td>₹25,000</td>
+                                <td>18.5 kWp</td>
+                                <td>₹14,80,000</td>
+                                <td>₹3,00,000</td>
+                                <td>4.9 years</td>
+                            </tr>
+                            <tr>
+                                <td>₹1,00,000</td>
+                                <td>74.1 kWp</td>
+                                <td>₹51,87,000</td>
+                                <td>₹12,00,000</td>
+                                <td>4.3 years</td>
+                            </tr>
+                            <tr>
+                                <td>₹5,00,000</td>
+                                <td>370.4 kWp</td>
+                                <td>₹2,40,76,000</td>
+                                <td>₹60,00,000</td>
+                                <td>4.0 years</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="text-muted small">
+                    <i class="fas fa-info-circle me-1"></i>
+                    Sample calculations based on average solar irradiance of 4.5 kWh/m²/day and ₹8/unit tariff
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Dynamic form interactions
+    document.addEventListener('DOMContentLoaded', function() {
+        // Update consumer category options based on consumer type
+        const consumerType = document.getElementById('consumer_type');
+        const consumerCategory = document.getElementById('consumer_category');
+        
+        consumerType.addEventListener('change', function() {
+            const type = this.value;
+            const categories = {
+                'Residential': [
+                    ['LT-1', 'LT-1 (Domestic)']
+                ],
+                'Commercial': [
+                    ['LT-2', 'LT-2 (Non-Domestic)'],
+                    ['LT-3', 'LT-3 (Commercial)'],
+                    ['HT-2', 'HT-2 (Commercial)']
+                ],
+                'Industrial': [
+                    ['LT-4', 'LT-4 (Industrial)'],
+                    ['HT-1', 'HT-1 (Industrial)']
+                ]
+            };
+            
+            // Clear existing options
+            consumerCategory.innerHTML = '';
+            
+            // Add new options
+            if (categories[type]) {
+                categories[type].forEach(([value, text]) => {
+                    const option = document.createElement('option');
+                    option.value = value;
+                    option.textContent = text;
+                    consumerCategory.appendChild(option);
+                });
+            }
+        });
+        
+        // Trigger initial update
+        consumerType.dispatchEvent(new Event('change'));
+        
+        // File upload preview
+        const fileInput = document.getElementById('bill_upload');
+        if (fileInput) {
+            fileInput.addEventListener('change', function() {
+                const file = this.files[0];
+                if (file) {
+                    const fileSize = (file.size / 1024 / 1024).toFixed(2);
+                    const fileType = file.type;
+                    
+                    let message = `Selected: ${file.name} (${fileSize} MB)`;
+                    
+                    if (fileSize > 16) {
+                        message += ' - File too large (max 16MB)';
+                        this.setCustomValidity('File size must be less than 16MB');
+                    } else if (!fileType.includes('pdf') && !fileType.includes('image')) {
+                        message += ' - Invalid file type';
+                        this.setCustomValidity('Please upload PDF or image files only');
+                    } else {
+                        this.setCustomValidity('');
+                    }
+                    
+                    // Update form text
+                    const formText = this.parentElement.querySelector('.form-text');
+                    if (formText) {
+                        formText.innerHTML = `<i class="fas fa-file me-1"></i>${message}`;
+                    }
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}
