@@ -254,14 +254,25 @@ def demo_info():
     return render_template('demo_info.html')
 
 if __name__ == '__main__':
-    print("\n🚀 Starting Solar Plant Financial Calculator...")
-    print("📍 Running on: http://localhost:5000")
+    # Get port from environment variable (for deployment) or default to 5000
+    port = int(os.getenv('PORT', 5000))
+    debug_mode = os.getenv('FLASK_ENV') != 'production'
+
+    print("\n🌞 Solar Plant Financial Calculator - Full Version")
+    print("=" * 60)
     if SUPABASE_AVAILABLE:
-        print("🔗 Backend: Supabase Connected")
-        print("📊 Features: Full functionality with PDF reports")
+        print("✅ Supabase: Connected (Real database)")
+        print("✅ PDF Reports: Enabled")
+        print("✅ Data Storage: Enabled")
     else:
-        print("🔗 Backend: Mock Client (Demo mode)")
-        print("📊 Features: All calculations work, limited PDF functionality")
+        print("⚠️  Supabase: Mock Client (Demo mode)")
+        print("⚠️  PDF Reports: Limited functionality")
         print("💡 Setup Supabase for full features (see SUPABASE_SETUP.md)")
+    print("=" * 60)
+    print("\n🚀 Starting Solar Plant Financial Calculator...")
+    print(f"📍 Running on: http://localhost:{port}")
+    print("🔗 Backend: Supabase Connected" if SUPABASE_AVAILABLE else "🔗 Backend: Demo Mode")
+    print("📊 Features: Full functionality with PDF reports")
     print("-" * 60)
-    app.run(debug=True, host='0.0.0.0', port=5000)
+
+    app.run(debug=debug_mode, host='0.0.0.0', port=port)
