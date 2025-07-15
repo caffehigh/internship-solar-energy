@@ -73,7 +73,7 @@ class SolarCalculatorForm(FlaskForm):
                                render_kw={"class": "form-select"})
 
     monthly_bill = FloatField('Monthly Electricity Bill (₹)',
-                             validators=[DataRequired(), NumberRange(min=100, max=2500000)],
+                             validators=[DataRequired(), NumberRange(min=100)],
                              render_kw={"class": "form-control", "placeholder": "Enter your monthly bill amount"})
 
     monthly_consumption = FloatField('Monthly Consumption (kWh)',

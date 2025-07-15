@@ -38,31 +38,32 @@ class SolarCalculator:
             return 0
         return monthly_bill / tariff_rate
 
-    def calculate_plant_capacity(self, monthly_consumption):
+    def calculate_plant_capacity(self, monthly_consumption, avg_irradiance=4.5):
         """Calculate required plant capacity using: Capacity = Monthly Consumption / (Avg Irradiance × PR × 30)"""
-        return monthly_consumption / (self.AVG_IRRADIANCE * self.PERFORMANCE_RATIO * self.DAYS_PER_MONTH)
+        return monthly_consumption / (avg_irradiance * self.PERFORMANCE_RATIO * self.DAYS_PER_MONTH)
 
-    def calculate_investment_capex(self, capacity_kw):
+    def calculate_investment_capex_simple(self, capacity_kw, consumer_type="Residential"):
         """Calculate investment (CAPEX) using: Investment = Capacity × Cost per kW"""
-        return capacity_kw * self.COST_PER_KW
+        cost_per_kw = self.get_cost_per_kw(consumer_type, capacity_kw)
+        return capacity_kw * cost_per_kw
 
-    def calculate_monthly_generation(self, capacity_kw):
+    def calculate_monthly_generation(self, capacity_kw, avg_irradiance=4.5):
         """Calculate monthly generation using: Monthly Generation = Capacity × Avg Irradiance × PR × 30"""
-        return capacity_kw * self.AVG_IRRADIANCE * self.PERFORMANCE_RATIO * self.DAYS_PER_MONTH
+        return capacity_kw * avg_irradiance * self.PERFORMANCE_RATIO * self.DAYS_PER_MONTH
 
     def calculate_yearly_generation(self, monthly_generation):
         """Calculate yearly generation using: Yearly Generation = Monthly Generation × 12"""
         return monthly_generation * self.MONTHS_PER_YEAR
 
-    def calculate_annual_savings(self, yearly_generation, tariff_rate):
+    def calculate_annual_savings_from_generation(self, yearly_generation, tariff_rate):
         """Calculate annual savings using: Annual Savings = Yearly Generation × Tariff"""
         return yearly_generation * tariff_rate
 
-    def calculate_monthly_savings(self, annual_savings):
+    def calculate_monthly_savings_from_annual(self, annual_savings):
         """Calculate monthly savings from annual savings"""
         return annual_savings / self.MONTHS_PER_YEAR
 
-    def calculate_payback_period(self, investment, annual_savings):
+    def calculate_payback_period_from_investment(self, investment, annual_savings):
         """Calculate payback period using: Payback Period = Investment / Annual Savings"""
         if annual_savings <= 0:
             return float('inf')
@@ -167,7 +168,7 @@ class SolarCalculator:
         cost_per_kw = self.get_cost_per_kw(consumer_type, capacity)
         return capacity * cost_per_kw
 
-    def calculate_annual_savings(self, yearly_generation: float, tariff_rate: float) -> float:
+    def calculate_annual_savings_precise(self, yearly_generation: float, tariff_rate: float) -> float:
         """
         Calculate annual savings:
         Savings/year = Yearly Generation x Tariff
@@ -181,7 +182,7 @@ class SolarCalculator:
         """
         return yearly_generation * tariff_rate
 
-    def calculate_payback_period(self, investment: float, annual_savings: float) -> float:
+    def calculate_payback_period_precise(self, investment: float, annual_savings: float) -> float:
         """
         Calculate payback period:
         Payback = Investment / Annual Savings
@@ -240,7 +241,7 @@ class SolarCalculator:
         yearly_generation = monthly_generation * 12
 
         # Step 4: Calculate savings using precise formulas
-        annual_savings = self.calculate_annual_savings(yearly_generation, tariff_rate)
+        annual_savings = self.calculate_annual_savings_precise(yearly_generation, tariff_rate)
         monthly_savings = annual_savings / 12
         lifetime_savings = annual_savings * self.SYSTEM_LIFETIME
 
@@ -255,7 +256,7 @@ class SolarCalculator:
         payback_period = 0
         if investment_model == "CAPEX":
             investment = self.calculate_investment_capex(plant_capacity, consumer_type)
-            payback_period = self.calculate_payback_period(investment, annual_savings)
+            payback_period = self.calculate_payback_period_precise(investment, annual_savings)
 
         # Step 7: Calculate additional system specifications
         panel_count = math.ceil(plant_capacity / 0.4)  # Assuming 400W panels
