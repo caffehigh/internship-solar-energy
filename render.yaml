@@ -1,9 +1,23 @@
 services:
   - type: web
-    name: solar-calculator
+    name: solar-calculator-flask
     env: python
     buildCommand: pip install -r requirements.txt
     startCommand: python solar_app.py
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.0
+      - key: PORT
+        value: 10000
+      - key: FLASK_ENV
+        value: production
+      - key: FORCE_LOCAL_MODE
+        value: true
+  - type: web
+    name: solar-calculator-streamlit
+    env: python
+    buildCommand: pip install -r internship-solar-energy/requirements.txt
+    startCommand: streamlit run internship-solar-energy/app.py --server.port $PORT --server.address 0.0.0.0
     envVars:
       - key: PYTHON_VERSION
         value: 3.12.0

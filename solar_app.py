@@ -37,12 +37,20 @@ calculator = SolarCalculator()
 ocr_processor = BillOCRProcessor()
 
 # Initialize Supabase client with fallback to mock
+# Force mock client for local development to avoid network issues
 try:
+    # Check if we want to force local mode
+    FORCE_LOCAL_MODE = os.getenv('FORCE_LOCAL_MODE', 'true').lower() == 'true'
+
+    if FORCE_LOCAL_MODE:
+        raise ValueError("Forcing local mode for development")
+
     from backend.supabase_client import SupabaseClient
     supabase_client = SupabaseClient()
     SUPABASE_AVAILABLE = True
 except Exception as e:
     print(f"⚠️  Supabase client not available: {e}")
+    print("🔧 Using Mock Client for local development")
     from backend.mock_supabase_client import MockSupabaseClient
     supabase_client = MockSupabaseClient()
     SUPABASE_AVAILABLE = False

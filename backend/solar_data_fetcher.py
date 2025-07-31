@@ -41,26 +41,19 @@ class SolarDataFetcher:
     def get_enhanced_solar_data(self, city: str, fallback_data: Dict[str, Any]) -> Dict[str, Any]:
         """
         Get enhanced solar data for a city, with API integration and fallback
-        
+
         Args:
             city: City name
             fallback_data: Fallback data from local database
-            
+
         Returns:
             Dict containing enhanced solar data
         """
         try:
-            # Try to get data from Global Solar Atlas API
-            if self.api_key and city in self.city_coordinates:
-                api_data = self._fetch_from_api(city)
-                if api_data:
-                    # Merge API data with fallback data
-                    enhanced_data = {**fallback_data, **api_data}
-                    return enhanced_data
-            
-            # If API fails or no API key, enhance local data
+            # For local deployment, always use enhanced local data
+            # API integration disabled to avoid network issues
             return self._enhance_local_data(city, fallback_data)
-            
+
         except Exception as e:
             print(f"Error fetching enhanced solar data: {str(e)}")
             return self._enhance_local_data(city, fallback_data)
